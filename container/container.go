@@ -10,9 +10,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/akm/godocker/network"
 	"github.com/akm/godocker/resources"
 	"github.com/google/uuid"
 	"golang.org/x/sys/unix"
+	
 )
 
 // Config 容器配置
@@ -106,6 +108,12 @@ func NewContainer(config *Config) (string, error) {
 		fmt.Printf("警告: 应用资源限制失败: %v\n", err)
 	}
 
+	if config.Network != "" && config.Network != "none" {
+		_, err := network.SetupNetwork(config.Network, containerId, container.Pid)
+		if err != nil {
+			fmt.Printf("容器网络配置失败: %v\n", err)
+		}
+	}
 	return containerId, nil
 }
 
