@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  godocker-dev:
+    image: golang:1.18-alpine
+    container_name: godocker-dev
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/godocker:/var/lib/godocker
+    working_dir: /app
+    privileged: true  # 需要特权模式以使用namespace和cgroups
+    environment:
+      - GOPROXY=https://goproxy.cn,direct
+    command: sh -c "apk add --no-cache gcc libc-dev linux-headers && go mod tidy && go build -o godocker && tail -f /dev/null"
+    network_mode: host 
